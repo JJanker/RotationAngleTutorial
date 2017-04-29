@@ -108,9 +108,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mLastPitch = pitch;
             mLastRoll = roll;
             mLastAzimuth = azimuth;
-            tvX.setText(Float.toString(roll));
-            tvY.setText(Float.toString(pitch));
-            tvZ.setText(Float.toString(azimuth));
+            int iRoll = (int)roll;
+            int iPitch = (int)pitch;
+            int iAzimuth = (int)azimuth;
+            tvX.setText(Float.toString(iRoll));
+            tvY.setText(Float.toString(iPitch));
+            tvZ.setText(Float.toString(iAzimuth));
         }
     }
 }
