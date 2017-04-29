@@ -1,6 +1,7 @@
 package com.example.rotationangletutorial;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,16 +20,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float accels[] = new float[3];
     private float mags[] = new float[3];
     private float values[] = new float[3];
+    private float firstAzimuth;
+    private float firstPitch;
+    private float firstRoll;
     private float azimuth;
     private float pitch;
     private float roll;
     private boolean mInitialized;
+    private boolean resetValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mInitialized = false;
+        resetValues = false;
         sManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
@@ -58,23 +64,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 break;
         }
 
-        if(mags != null && accels != null) {
+        if (mags != null && accels != null) {
             gravity = new float[9];
             magnetic = new float[9];
             SensorManager.getRotationMatrix(gravity, magnetic, accels, mags);
             float[] outGravity = new float[9];
             SensorManager.remapCoordinateSystem(gravity, SensorManager.AXIS_X, SensorManager.AXIS_Z, outGravity);
             SensorManager.getOrientation(outGravity, values);
-
-            azimuth = values[0] * 57.2957795f;
-            pitch = values[1] * 57.2957795f;
-            roll = values[2] * 57.2957795f;
-            mags = null;
-            accels = null;
+            //if first azimuth measurement has not been taken;
+            if (!resetValues && values[0]*57.2957795f != -180.0) {
+                firstAzimuth = values[0] * 57.2957795f;
+                firstPitch = values[1] * 57.2957795f;
+                firstRoll = values[2] * 57.2957795f;
+                resetValues = true;
+            }
+            else {
+                azimuth = values[0] * 57.2957795f - firstAzimuth;
+                pitch = values[1] * 57.2957795f - firstPitch;
+                roll = values[2] * 57.2957795f - firstRoll;
+                mags = null;
+                accels = null;
+            }
         }
-        TextView tvX= (TextView)findViewById(R.id.x_axis);
-        TextView tvY= (TextView)findViewById(R.id.y_axis);
-        TextView tvZ= (TextView)findViewById(R.id.z_axis);
+        TextView tvX = (TextView) findViewById(R.id.x_axis);
+        TextView tvY = (TextView) findViewById(R.id.y_axis);
+        TextView tvZ = (TextView) findViewById(R.id.z_axis);
 
         if (!mInitialized) {
             mLastPitch = pitch;
@@ -94,8 +108,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mLastPitch = pitch;
             mLastRoll = roll;
             mLastAzimuth = azimuth;
-            tvX.setText(Float.toString(pitch));
-            tvY.setText(Float.toString(roll));
+            tvX.setText(Float.toString(roll));
+            tvY.setText(Float.toString(pitch));
             tvZ.setText(Float.toString(azimuth));
         }
     }
