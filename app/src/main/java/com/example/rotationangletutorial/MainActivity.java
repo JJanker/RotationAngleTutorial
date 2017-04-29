@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = sManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_NORMAL);
-        mGeoMagnetic = sManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mGeoMagnetic = sManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         sManager.registerListener(this, mGeoMagnetic , SensorManager.SENSOR_DELAY_NORMAL);
     }
     protected void onResume() {
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
     public void onSensorChanged(SensorEvent event) {
         switch (event.sensor.getType()) {
-            case Sensor.TYPE_MAGNETIC_FIELD:
+            case Sensor.TYPE_GAME_ROTATION_VECTOR:
                 mags = event.values.clone();
                 break;
             case Sensor.TYPE_ACCELEROMETER:
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 pitch = values[1] * 57.2957795f - firstPitch;
                 roll = values[2] * 57.2957795f - firstRoll;
                 mags = null;
-                accels = null;
+                accels = null   ;
             }
         }
         TextView tvX = (TextView) findViewById(R.id.x_axis);
@@ -114,3 +114,4 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 }
+
