@@ -70,6 +70,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             SensorManager.getRotationMatrix(gravity, magnetic, accels, mags);
             float[] outGravity = new float[9];
             SensorManager.remapCoordinateSystem(gravity, SensorManager.AXIS_X, SensorManager.AXIS_Z, outGravity);
+
+            //Computes the device's orientation based on the rotation matrix
+            //values[0]: Azimuth, angle of rotation about the z-axis
+            //values[1]: Pitch, angle of rotation about the x-axis
+            //values[2]: Roll, angle of rotation about the y-axis
             SensorManager.getOrientation(outGravity, values);
             //if first azimuth measurement has not been taken;
             if (!resetValues && values[0]*57.2957795f != -180.0) {
@@ -91,29 +96,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         TextView tvZ = (TextView) findViewById(R.id.z_axis);
 
         if (!mInitialized) {
+            mLastAzimuth = azimuth;
             mLastPitch = pitch;
             mLastRoll = roll;
-            mLastAzimuth = azimuth;
+            tvZ.setText("0.0");
             tvX.setText("0.0");
             tvY.setText("0.0");
-            tvZ.setText("0.0");
             mInitialized = true;
         } else {
-            //float deltaX = Math.abs(mLastX - x);
-            //float deltaY = Math.abs(mLastY - y);
-            //float deltaZ = Math.abs(mLastZ - z);
-            //if (deltaX < NOISE) deltaX = (float)0.0;
-            //if (deltaY < NOISE) deltaY = (float)0.0;
-            //if (deltaZ < NOISE) deltaZ = (float)0.0;
+            mLastAzimuth = azimuth;
             mLastPitch = pitch;
             mLastRoll = roll;
-            mLastAzimuth = azimuth;
-            int iRoll = (int)roll;
-            int iPitch = (int)pitch;
             int iAzimuth = (int)azimuth;
-            tvX.setText(Float.toString(iRoll));
-            tvY.setText(Float.toString(iPitch));
+            int iPitch = (int)pitch;
+            int iRoll = (int)roll;
             tvZ.setText(Float.toString(iAzimuth));
+            tvX.setText(Float.toString(iPitch));
+            tvY.setText(Float.toString(iRoll));
         }
     }
 }
